@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniRAG - Multimodal RAG Web App (GitHub Pages)</title>
+  <meta name="description" content="GitHub Pages Web Interface for OmniRAG Python Multimodal Framework. Extracts insights from PDFs and scanned tables using Gemini and Llama.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation -->
+    <header class="header">
+      <div class="logo-area">
+        <div class="logo-icon">📑</div>
+        <div>
+          <h1 class="logo-title">OmniRAG <span class="badge">GitHub Pages</span></h1>
+          <p class="logo-subtitle">Multimodal RAG for PDFs & Scanned Tables</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="backend-status" id="backendStatus">
+          <span class="status-dot"></span>
+          <span id="backendStatusText">Checking Backend...</span>
+        </div>
+        <button class="settings-btn" id="settingsToggleBtn" title="Backend Settings">
+          ⚙️ Backend Config
+        </button>
+      </div>
+    </header>
+
+    <!-- Settings Modal/Panel -->
+    <div class="settings-panel hidden" id="settingsPanel">
+      <div class="settings-card">
+        <h3>Python Backend Configuration</h3>
+        <p class="text-muted">Enter the URL of your deployed Python FastAPI backend, or use local server during development.</p>
+        
+        <div class="form-group">
+          <label for="backendUrlInput">API Endpoint URL:</label>
+          <input type="url" id="backendUrlInput" value="http://localhost:8000" placeholder="https://your-omnirag-api.onrender.com">
+        </div>
+
+        <div class="settings-actions">
+          <button class="btn btn-secondary" id="testConnectionBtn">Test Connection</button>
+          <button class="btn btn-primary" id="saveSettingsBtn">Save & Apply</button>
+        </div>
+        <div id="testResult" class="test-result"></div>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="main-layout">
+      <!-- Left Column: Document Upload & Sample Selector -->
+      <section class="panel left-panel">
+        <div class="panel-header">
+          <h2>1. Documents & Tables</h2>
+          <span class="counter" id="docCount">0 loaded</span>
+        </div>
+
+        <!-- Upload Area -->
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.webp" class="file-input">
+          <div class="drop-content">
+            <div class="upload-icon">📂</div>
+            <p class="drop-title">Drag & drop PDF or scanned image</p>
+            <p class="drop-sub">Supports PDF, PNG, JPG tables (150+ DPI)</p>
+            <button class="btn btn-secondary btn-sm" type="button" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+          </div>
+        </div>
+
+        <!-- Sample Documents -->
+        <div class="samples-section">
+          <div class="samples-header">
+            <span>Or test with built-in samples:</span>
+          </div>
+          <div class="sample-chips">
+            <button class="sample-chip active" data-sample="financial">
+              📊 TechCorp Q3 Earnings & Balance Sheet
+            </button>
+            <button class="sample-chip" data-sample="energy">
+              ⚡ Global Clean Energy Cost Matrix
+            </button>
+            <button class="sample-chip" data-sample="clinical">
+              🧪 Clinical Trial Biomarker & Cohort Results
+            </button>
+          </div>
+        </div>
+
+        <!-- Document Viewer & Table Preview -->
+        <div class="doc-preview-card" id="docPreviewCard">
+          <div class="doc-info-bar">
+            <span class="doc-badge" id="docBadge">Active Document</span>
+            <span class="doc-name" id="docName">TechCorp_Q3_Earnings.pdf</span>
+          </div>
+          <div class="preview-viewport">
+            <img id="activeDocImg" src="" alt="Document page preview" class="preview-img">
+            <div class="table-overlay-box" id="tableOverlayBox"></div>
+          </div>
+          <div class="page-nav">
+            <button class="nav-btn" id="prevPageBtn">◀ Prev Page</button>
+            <span id="pageIndicator" class="page-indicator">Page 1 of 2</span>
+            <button class="nav-btn" id="nextPageBtn">Next Page ▶</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Query & Multimodal Insight Viewer -->
+      <section class="panel right-panel">
+        <div class="panel-header">
+          <h2>2. Multimodal Extraction & Insights</h2>
+          
+          <!-- Model Selector -->
+          <div class="model-selector-bar">
+            <label class="model-pill">
+              <input type="radio" name="model" value="gemini" checked>
+              <span class="pill-content">
+                <span class="pill-icon">✨</span>
+                <span>Gemini 2.5 Flash</span>
+                <span class="tag-free">Free</span>
+              </span>
+            </label>
+            <label class="model-pill">
+              <input type="radio" name="model" value="llama">
+              <span class="pill-content">
+                <span class="pill-icon">🦙</span>
+                <span>Llama 3.2 Vision</span>
+                <span class="tag-free">Free</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Query Input Bar -->
+        <form class="query-form" id="queryForm">
+          <div class="query-input-wrap">
+            <input 
+              type="text" 
+              id="queryInput" 
+              placeholder="Ask anything about the document or tables (e.g. 'Compare gross margins by segment')..."
+              autocomplete="off"
+            >
+            <button type="submit" class="btn btn-primary" id="submitQueryBtn">
+              <span>Run RAG</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Quick Question Suggestions -->
+        <div class="quick-questions" id="quickQuestions">
+          <span class="quick-label">Try asking:</span>
+          <button class="quick-btn" data-query="Extract the revenue table and calculate the YoY growth percentage for each division">"Calculate YoY revenue growth"</button>
+          <button class="quick-btn" data-query="What were the total operating expenses and which department had the largest increase?">"Operating expenses breakdown"</button>
+          <button class="quick-btn" data-query="Summarize all table footnotes and highlight any reported risks or exceptions">"Table footnotes & risks"</button>
+        </div>
+
+        <!-- Result / Insight Display -->
+        <div class="results-container" id="resultsContainer">
+          <div class="welcome-placeholder" id="welcomePlaceholder">
+            <div class="placeholder-icon">🔍</div>
+            <h3>Ready for Multimodal Querying</h3>
+            <p>Select a sample document or upload your own PDF/scanned report, then ask questions about the tables and data.</p>
+          </div>
+
+          <!-- Loading state -->
+          <div class="loading-state hidden" id="loadingState">
+            <div class="spinner"></div>
+            <p class="loading-text" id="loadingText">Retrieving visual page chunks and analyzing tables with Multimodal LLM...</p>
+          </div>
+
+          <!-- Result Card -->
+          <div class="insight-card hidden" id="insightCard">
+            <div class="insight-header">
+              <div class="insight-meta">
+                <span class="badge-success" id="resultModelBadge">✨ Gemini 2.5 Flash</span>
+                <span class="latency-text" id="resultLatency">420ms</span>
+                <span class="citation-chip" id="resultCitation">Page 1, Table 2</span>
+              </div>
+              <button class="copy-btn" id="copyResultBtn" title="Copy Answer">📋 Copy</button>
+            </div>
+
+            <!-- Answer text -->
+            <div class="answer-body" id="answerBody"></div>
+
+            <!-- Extracted Markdown/HTML Table Container -->
+            <div class="table-container-wrap" id="tableContainerWrap">
+              <div class="table-header-bar">
+                <span>📊 Extracted Structured Table</span>
+                <button class="btn btn-xs btn-secondary" id="exportCsvBtn">Export CSV</button>
+              </div>
+              <div class="table-scroll" id="extractedTableArea"></div>
+            </div>
+
+            <!-- RAG Inspection Trace -->
+            <details class="rag-trace-details">
+              <summary>🔬 View Multimodal RAG Trace (Retrieval & Grounding)</summary>
+              <div class="trace-content" id="traceContent">
+                <div class="trace-item">
+                  <strong>Retrieved Pages:</strong> <span id="tracePages">Page 1 (score 3.6), Page 2 (score 1.2)</span>
+                </div>
+                <div class="trace-item">
+                  <strong>Multimodal Prompt Input:</strong> <span id="tracePrompt">Rendered 150 DPI page JPEG + Table Markdown heuristics</span>
+                </div>
+                <div class="trace-item">
+                  <strong>Visual Grounding:</strong> <span>Detected bounding box: [y: 180px, x: 40px, w: 720px, h: 420px]</span>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>OmniRAG Framework • Designed for GitHub Pages & Python Backends • Compatible with free-tier Gemini & Llama 3.2 Vision</p>
+    </footer>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
