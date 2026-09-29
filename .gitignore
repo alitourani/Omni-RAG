@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Misc
+node_modules/
+coverage/
+.DS_Store
+*.log
+.env*
+
+!.env.example

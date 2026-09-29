@@ -1,0 +1,17 @@
+# Omni-RAG Dependencies
+
+# Core Web & Gradio SDK
+gradio>=4.40.0
+fastapi>=0.115.0
+uvicorn>=0.30.0
+python-multipart>=0.0.9
+pydantic>=2.8.0
+python-dotenv>=1.0.1
+
+# Multimodal LLM SDKs
+google-genai>=0.1.1
+groq>=0.9.0
+
+# Document & High-DPI Image Processing
+pymupdf>=1.24.0
+Pillow>=10.4.0
