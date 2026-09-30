@@ -178,8 +178,28 @@ with gr.Blocks() as demo:
 demo.ssr_mode = False
 
 # Mount FastAPI app onto Gradio
-app = gr.mount_gradio_app(api_app, demo, path="/")
+app = gr.mount_gradio_app(api_app, demo, path="/", ssr_mode=False)
 
 if __name__ == "__main__":
+    print("[INFO] Launching Omni-RAG ...")
     port = int(os.getenv("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    
+    # Check if running inside Hugging Face Spaces
+    is_hf_space = os.getenv("SPACE_ID") or os.getenv("HF_SPACE_ID")
+    print(f"[INFO] Port {port} | On-HF-Space: {is_hf_space}")
+    
+    if is_hf_space:
+        # On HF Spaces: Launch via Gradio to keep process alive on port 7860
+        print("[INFO] Launching on Hugging Face Spaces...")
+        try:
+            demo.launch(server_name="0.0.0.0", server_port=port, ssr_mode=False)
+        except Exception as e:
+            print(f"\n[FATAL ERROR] Space failed to launch: {str(e)}", file=sys.stderr)
+            print("\n[TRACEBACK]:", file=sys.stderr)
+            traceback.print_exc()
+            # Re-raise so HF registers the crash with a clear error stack
+            raise e
+    else:
+        # On Local Machine: Launch via Uvicorn for live reload and local debugging
+        print("[INFO] Launching on Local Machine...")
+        uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
