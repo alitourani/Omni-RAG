@@ -6,10 +6,16 @@ on Hugging Face at '7860'.
 """
 
 import os
+import sys
+import time
 import uvicorn
+import traceback
+import threading
 import gradio as gr
+import urllib.request
 from pydantic import BaseModel
 from typing import Optional, List
+from fastapi.responses import RedirectResponse
 from rag.rag_pipeline import MultimodalRAGPipeline
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -20,7 +26,9 @@ pipeline = MultimodalRAGPipeline()
 
 # Define FastAPI app
 api_app = FastAPI(
-    title="Omni-RAG API (Hugging Face Spaces)",
+    docs_url="/docs",
+    title="Omni-RAG API",
+    openapi_url="/openapi.json",
     description="Multimodal RAG Backend of Omni-RAG for Office Use Cases (PDFs, Scanned Files, etc.)"
 )
 
@@ -45,6 +53,14 @@ class QueryResponse(BaseModel):
     tables: List[dict]
     citations: List[dict]
     latency_ms: float
+
+# ----------- Root Redirect ----------------
+@api_app.get("/", include_in_schema=False)
+def root_redirect():
+    """
+    Redirects web visitors from root to the Gradio UI.
+    """
+    return RedirectResponse(url="/ui")
 
 # ----------- Health API ----------------
 @api_app.get("/api/health")
@@ -134,6 +150,24 @@ def gradio_query(question, model_choice):
     except Exception as e:
         return f"Error: {str(e)}", "", "Error"
 
+def debug_health_ping(port):
+    """
+    Wait 5 seconds, then ping the internal FastAPI health route to see if it's alive.
+    """
+    time.sleep(5)
+    print("\n[DEBUG THREAD] Checking registered routes...")
+    routes_to_test = ["/api/health", "/docs", "/openapi.json", "/ui"]
+    for route in routes_to_test:
+        try:
+            url = f"http://127.0.0.1:{port}{route}"
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=5) as response:
+                print(f"[DEBUG THREAD] {route} -> STATUS {response.status}")
+        except urllib.error.HTTPError as e:
+            print(f"[DEBUG THREAD] {route} -> HTTP ERROR {e.code}")
+        except Exception as e:
+            print(f"[DEBUG THREAD] {route} -> FAILED ({e})")
+
 with gr.Blocks() as demo:
     gr.Markdown("""
     # 📑 Omni-RAG Backend (Hugging Face Spaces)
@@ -178,7 +212,7 @@ with gr.Blocks() as demo:
 demo.ssr_mode = False
 
 # Mount FastAPI app onto Gradio
-app = gr.mount_gradio_app(api_app, demo, path="/", ssr_mode=False)
+app = gr.mount_gradio_app(api_app, demo, path="/ui", ssr_mode=False)
 
 if __name__ == "__main__":
     print("[INFO] Launching Omni-RAG ...")
@@ -191,13 +225,16 @@ if __name__ == "__main__":
     if is_hf_space:
         # On HF Spaces: Launch via Gradio to keep process alive on port 7860
         print("[INFO] Launching on Hugging Face Spaces...")
+
+        # Temporary Debug
+        threading.Thread(target=debug_health_ping, args=(port,), daemon=True).start()
+
         try:
             demo.launch(server_name="0.0.0.0", server_port=port, ssr_mode=False)
         except Exception as e:
             print(f"\n[FATAL ERROR] Space failed to launch: {str(e)}", file=sys.stderr)
             print("\n[TRACEBACK]:", file=sys.stderr)
             traceback.print_exc()
-            # Re-raise so HF registers the crash with a clear error stack
             raise e
     else:
         # On Local Machine: Launch via Uvicorn for live reload and local debugging
