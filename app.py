@@ -134,7 +134,7 @@ def gradio_query(question, model_choice):
     except Exception as e:
         return f"Error: {str(e)}", "", "Error"
 
-with gr.Blocks(title="Omni-RAG Backend (Hugging Face Spaces)", theme=gr.themes.Soft()) as demo:
+with gr.Blocks() as demo:
     gr.Markdown("""
     # 📑 Omni-RAG Backend (Hugging Face Spaces)
     
@@ -174,9 +174,10 @@ with gr.Blocks(title="Omni-RAG Backend (Hugging Face Spaces)", theme=gr.themes.S
                 outputs=[output_answer, output_tables, output_latency]
             )
 
+# Disable Gradio SSR mode to prevent Node.js port collisions
+demo.ssr_mode = False
+
 # Mount FastAPI app onto Gradio
-# gr.mount_gradio_app mounts the Gradio app onto FastAPI at the root "/"
-# while keeping all "/api/*" FastAPI routes fully functional!
 app = gr.mount_gradio_app(api_app, demo, path="/")
 
 if __name__ == "__main__":
