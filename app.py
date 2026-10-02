@@ -1,8 +1,7 @@
 """
-Omni-RAG Hugging Face Spaces Entry Point.
-Serves the 'FastAPI RAG' backend with full CORS support so the GitHub Pages
-docs web app can query it directly, while also exposing a clean interactive UI
-on Hugging Face at '7860'.
+Omni-RAG Framework Entry Point serves the 'FastAPI RAG' backend with full CORS
+support so the GitHub Pages docs web app can query it directly, while also
+exposing a clean interactive UI on Render.com at '7860'.
 """
 
 import os
@@ -29,7 +28,7 @@ api_app = FastAPI(
     docs_url="/docs",
     title="Omni-RAG API",
     openapi_url="/openapi.json",
-    description="Multimodal RAG Backend of Omni-RAG for Office Use Cases (PDFs, Scanned Files, etc.)"
+    description="Omni-RAG for Office Use Cases (PDFs, Scanned Files, etc.)"
 )
 
 # Enable CORS for GitHub Pages (https://alitourani.github.io) and local testing
@@ -106,7 +105,7 @@ def query_rag(request: QueryRequest):
     if not pipeline.documents:
         raise HTTPException(
             status_code=400,
-            detail="No documents have been uploaded yet. Upload a PDF or scanned image first via /api/upload."
+            detail="No documents have been uploaded yet. Upload a file first via /api/upload."
         )
     try:
         response = pipeline.query(
@@ -150,53 +149,36 @@ def gradio_query(question, model_choice):
     except Exception as e:
         return f"Error: {str(e)}", "", "Error"
 
-# def debug_health_ping(port):
-#     """
-#     Wait 5 seconds, then ping the internal FastAPI health route to see if it's alive.
-#     """
-#     time.sleep(5)
-#     print("\n[DEBUG THREAD] Checking registered routes...")
-#     routes_to_test = ["/api/health", "/docs", "/openapi.json", "/ui"]
-#     for route in routes_to_test:
-#         try:
-#             url = f"http://127.0.0.1:{port}{route}"
-#             req = urllib.request.Request(url)
-#             with urllib.request.urlopen(req, timeout=5) as response:
-#                 print(f"[DEBUG THREAD] {route} -> STATUS {response.status}")
-#         except urllib.error.HTTPError as e:
-#             print(f"[DEBUG THREAD] {route} -> HTTP ERROR {e.code}")
-#         except Exception as e:
-#             print(f"[DEBUG THREAD] {route} -> FAILED ({e})")
-
 with gr.Blocks() as demo:
     gr.Markdown("""
-    # 📑 Omni-RAG Backend (Hugging Face Spaces)
+    # 📑 Omni-RAG
     
-    *This Space acts as a standalone UI and the **CORS-enabled REST API backend** for your GitHub Pages!*
+    *This Space acts as a standalone UI and the **CORS-enabled REST API backend** for Omni-RAG's GitHub Page!*
     
-    **GitHub Pages Endpoint:**
-    `https://alitourani.github.io/Omni-RAG/`
+    **GitHub Pages Endpoint:** `https://alitourani.github.io/Omni-RAG/`
     """)
     
     with gr.Row():
         with gr.Column(scale=1):
+            # File Upload Section
             file_uploader = gr.File(
-                label="Upload PDFs or Scanned Table Images", 
+                label="Upload PDFs or Scanned Documents", 
                 file_count="multiple",
                 file_types=[".pdf", ".png", ".jpg", ".jpeg"]
             )
-            upload_status = gr.Textbox(label="Ingestion Status", interactive=False)
+            # Ingestion
+            upload_status = gr.Textbox(label="Ingestion Status:", interactive=False)
             file_uploader.change(gradio_upload, inputs=[file_uploader], outputs=[upload_status])
-            
+            # File
             model_selector = gr.Radio(
                 label="Multimodal LLM (Free Versions)",
-                choices=["Gemini 3.8 Flash", "Llama 3.2 Vision (Groq)"],
+                choices=["Gemini 3.8 Flash"], # "Llama 3.2 Vision (Groq)"
                 value="Gemini 3.8 Flash"
             )
         
         with gr.Column(scale=2):
-            query_box = gr.Textbox(label="Question or Data Extraction Prompt", placeholder="e.g. Extract Table 2 and calculate YoY growth rate")
-            run_btn = gr.Button("🔍 Run Multimodal RAG", variant="primary")
+            query_box = gr.Textbox(label="Question / Prompt:", placeholder="e.g. Check Table 2 and calculate growth rate")
+            run_btn = gr.Button("🔍 Run Omni-RAG", variant="primary")
             
             output_answer = gr.Markdown(label="Multimodal Insight & Answer")
             output_tables = gr.Markdown(label="Extracted Tables")
@@ -234,22 +216,3 @@ if __name__ == "__main__":
         print("\n[TRACEBACK]:", file=sys.stderr)
         traceback.print_exc()
         raise e
-    
-    # if is_hf_space:
-    #     # On HF Spaces: Launch via Gradio to keep process alive on port 7860
-    #     print("[INFO] Launching on Hugging Face Spaces...")
-
-    #     # Temporary Debug
-    #     # threading.Thread(target=debug_health_ping, args=(port,), daemon=True).start()
-
-    #     try:
-    #         uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
-    #     except Exception as e:
-    #         print(f"\n[FATAL ERROR] Space failed to launch: {str(e)}", file=sys.stderr)
-    #         print("\n[TRACEBACK]:", file=sys.stderr)
-    #         traceback.print_exc()
-    #         raise e
-    # else:
-    #     # On Local Machine: Launch via Uvicorn for live reload and local debugging
-    #     print("[INFO] Launching on Local Machine...")
-    #     uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
