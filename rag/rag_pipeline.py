@@ -26,7 +26,7 @@ class RetrievalResult:
 class MultimodalRAGPipeline:
     def __init__(
         self,
-        gemini_model: str = "gemini-2.5-flash",
+        gemini_model: str = "gemini-3.8-flash",
         llama_model: str = "llama-3.2-11b-vision-preview",
         dpi: int = 150
     ):

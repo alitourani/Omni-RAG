@@ -1,7 +1,7 @@
 """
 Gemini Multimodal LLM Provider for Omni-RAG.
 Uses the modern Google GenAI SDK (google-genai).
-Free-tier compatible with gemini-2.5-flash and gemini-2.5-flash-lite.
+Compatible with gemini-3.8-flash.
 """
 
 import os
@@ -22,7 +22,7 @@ When answering:
 """
 
 class GeminiProvider(BaseMultimodalLLM):
-    def __init__(self, model_name: str = "gemini-2.5-flash", api_key: Optional[str] = None):
+    def __init__(self, model_name: str = "gemini-3.8-flash", api_key: Optional[str] = None):
         self.model_name = model_name
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         if not self.api_key:

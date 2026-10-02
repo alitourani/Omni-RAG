@@ -190,8 +190,8 @@ with gr.Blocks() as demo:
             
             model_selector = gr.Radio(
                 label="Multimodal LLM (Free Versions)",
-                choices=["Gemini 2.5 Flash", "Llama 3.2 Vision (Groq)"],
-                value="Gemini 2.5 Flash"
+                choices=["Gemini 3.8 Flash", "Llama 3.2 Vision (Groq)"],
+                value="Gemini 3.8 Flash"
             )
         
         with gr.Column(scale=2):
