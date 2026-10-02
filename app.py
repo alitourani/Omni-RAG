@@ -150,23 +150,23 @@ def gradio_query(question, model_choice):
     except Exception as e:
         return f"Error: {str(e)}", "", "Error"
 
-def debug_health_ping(port):
-    """
-    Wait 5 seconds, then ping the internal FastAPI health route to see if it's alive.
-    """
-    time.sleep(5)
-    print("\n[DEBUG THREAD] Checking registered routes...")
-    routes_to_test = ["/api/health", "/docs", "/openapi.json", "/ui"]
-    for route in routes_to_test:
-        try:
-            url = f"http://127.0.0.1:{port}{route}"
-            req = urllib.request.Request(url)
-            with urllib.request.urlopen(req, timeout=5) as response:
-                print(f"[DEBUG THREAD] {route} -> STATUS {response.status}")
-        except urllib.error.HTTPError as e:
-            print(f"[DEBUG THREAD] {route} -> HTTP ERROR {e.code}")
-        except Exception as e:
-            print(f"[DEBUG THREAD] {route} -> FAILED ({e})")
+# def debug_health_ping(port):
+#     """
+#     Wait 5 seconds, then ping the internal FastAPI health route to see if it's alive.
+#     """
+#     time.sleep(5)
+#     print("\n[DEBUG THREAD] Checking registered routes...")
+#     routes_to_test = ["/api/health", "/docs", "/openapi.json", "/ui"]
+#     for route in routes_to_test:
+#         try:
+#             url = f"http://127.0.0.1:{port}{route}"
+#             req = urllib.request.Request(url)
+#             with urllib.request.urlopen(req, timeout=5) as response:
+#                 print(f"[DEBUG THREAD] {route} -> STATUS {response.status}")
+#         except urllib.error.HTTPError as e:
+#             print(f"[DEBUG THREAD] {route} -> HTTP ERROR {e.code}")
+#         except Exception as e:
+#             print(f"[DEBUG THREAD] {route} -> FAILED ({e})")
 
 with gr.Blocks() as demo:
     gr.Markdown("""
@@ -221,22 +221,35 @@ if __name__ == "__main__":
     # Check if running inside Hugging Face Spaces
     is_hf_space = os.getenv("SPACE_ID") or os.getenv("HF_SPACE_ID")
     print(f"[INFO] Port {port} | On-HF-Space: {is_hf_space}")
-    
+
+    # Run the framework
     if is_hf_space:
-        # On HF Spaces: Launch via Gradio to keep process alive on port 7860
         print("[INFO] Launching on Hugging Face Spaces...")
-
-        # Temporary Debug
-        threading.Thread(target=debug_health_ping, args=(port,), daemon=True).start()
-
-        try:
-            demo.launch(server_name="0.0.0.0", server_port=port, ssr_mode=False)
-        except Exception as e:
-            print(f"\n[FATAL ERROR] Space failed to launch: {str(e)}", file=sys.stderr)
-            print("\n[TRACEBACK]:", file=sys.stderr)
-            traceback.print_exc()
-            raise e
     else:
-        # On Local Machine: Launch via Uvicorn for live reload and local debugging
         print("[INFO] Launching on Local Machine...")
-        uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+    try:
+        uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
+    except Exception as e:
+        print(f"\n[FATAL ERROR] Space failed to launch: {str(e)}", file=sys.stderr)
+        print("\n[TRACEBACK]:", file=sys.stderr)
+        traceback.print_exc()
+        raise e
+    
+    # if is_hf_space:
+    #     # On HF Spaces: Launch via Gradio to keep process alive on port 7860
+    #     print("[INFO] Launching on Hugging Face Spaces...")
+
+    #     # Temporary Debug
+    #     # threading.Thread(target=debug_health_ping, args=(port,), daemon=True).start()
+
+    #     try:
+    #         uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
+    #     except Exception as e:
+    #         print(f"\n[FATAL ERROR] Space failed to launch: {str(e)}", file=sys.stderr)
+    #         print("\n[TRACEBACK]:", file=sys.stderr)
+    #         traceback.print_exc()
+    #         raise e
+    # else:
+    #     # On Local Machine: Launch via Uvicorn for live reload and local debugging
+    #     print("[INFO] Launching on Local Machine...")
+    #     uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
