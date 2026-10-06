@@ -6,10 +6,14 @@ It contains a Python framework with a multimodal RAG pipeline, document parser, 
 
 ## 🔗 Links
 
-**System UI (with Gradio):** [https://omni-rag-api.onrender.com/ui/](https://omni-rag-api.onrender.com/ui/)
+### **UI-based:**
 
-**System API (Docs):** [https://omni-rag-api.onrender.com/api/documents](https://omni-rag-api.onrender.com/api/documents)
+- **With Google Pages:** [https://alitourani.github.io/Omni-RAG/](https://alitourani.github.io/Omni-RAG/)
+- **With Gradio:** [https://omni-rag-api.onrender.com/ui/](https://omni-rag-api.onrender.com/ui/)
 
-**System API (Upload):** [https://omni-rag-api.onrender.com/api/upload](https://omni-rag-api.onrender.com/api/upload)
+### **System APIs:**
 
-**System API (Query):** [https://omni-rag-api.onrender.com/api/query](https://omni-rag-api.onrender.com/api/query)
+- **Health:** [https://omni-rag-api.onrender.com/api/health](https://omni-rag-api.onrender.com/api/health)
+- **Docs:** [https://omni-rag-api.onrender.com/api/documents](https://omni-rag-api.onrender.com/api/documents)
+- **Upload:** [https://omni-rag-api.onrender.com/api/upload](https://omni-rag-api.onrender.com/api/upload)
+- **Query:** [https://omni-rag-api.onrender.com/api/query](https://omni-rag-api.onrender.com/api/query)
