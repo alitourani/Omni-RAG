@@ -281,7 +281,6 @@ const SAMPLES = {
 const backendStatusText = document.getElementById('backendStatusText');
 const backendStatusEl = document.getElementById('backendStatus');
 const statusDot = backendStatusEl.querySelector('.status-dot');
-const settingsToggleBtn = document.getElementById('settingsToggleBtn');
 const settingsPanel = document.getElementById('settingsPanel');
 const backendUrlInput = document.getElementById('backendUrlInput');
 const testConnectionBtn = document.getElementById('testConnectionBtn');
@@ -529,11 +528,6 @@ function generateSimulatedInsight(query, sampleKey, model) {
 
 // Event Listeners
 function setupEvents() {
-  // Settings toggle
-  settingsToggleBtn.addEventListener('click', () => {
-    settingsPanel.classList.toggle('hidden');
-  });
-
   // Test connection
   testConnectionBtn.addEventListener('click', async () => {
     testResult.textContent = 'Testing connection...';
@@ -558,7 +552,7 @@ function setupEvents() {
   saveSettingsBtn.addEventListener('click', () => {
     state.backendUrl = backendUrlInput.value.replace(/\/$/, '');
     localStorage.setItem('omnirag_backend_url', state.backendUrl);
-    settingsPanel.classList.add('hidden');
+    // settingsPanel.classList.add('hidden');
     checkBackendHealth();
   });
 

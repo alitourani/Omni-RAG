@@ -37,13 +37,10 @@
     <div class="settings-panel hidden" id="settingsPanel">
       <div class="settings-card">
         <h3>Python Backend Configuration</h3>
-        <p class="text-muted">Enter the URL of your deployed Python FastAPI backend, or use local server during development.</p>
-        
         <div class="form-group">
-          <label for="backendUrlInput">API Endpoint URL:</label>
-          <input type="url" id="backendUrlInput" value="http://localhost:8000" placeholder="https://your-omnirag-api.onrender.com">
+          <label for="backendUrlInput">API Endpoint URL (Render.com, HuggingFace Space, localhost):</label>
+          <input type="url" id="backendUrlInput" value="http://localhost:8000" placeholder="https://omni-rag-api.onrender.com">
         </div>
-
         <div class="settings-actions">
           <button class="btn btn-secondary" id="testConnectionBtn">Test Connection</button>
           <button class="btn btn-primary" id="saveSettingsBtn">Save & Apply</button>
