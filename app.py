@@ -69,7 +69,7 @@ def health_check():
         "gemini_configured": bool(os.getenv("GEMINI_API_KEY")),
         "groq_llama_configured": bool(os.getenv("GROQ_API_KEY")),
         "documents_indexed": len(pipeline.documents),
-        "platform": "Hugging Face Spaces (Gradio SDK)"
+        "platform": "Render.com (Gradio SDK)"
     }
 
 # ----------- Document Check API ----------------
@@ -155,7 +155,7 @@ with gr.Blocks() as demo:
     
     *This Space acts as a standalone UI and the **CORS-enabled REST API backend** for Omni-RAG's GitHub Page!*
     
-    **GitHub Pages Endpoint:** `https://alitourani.github.io/Omni-RAG/`
+    **GitHub Pages Endpoint:** [https://alitourani.github.io/Omni-RAG/](https://alitourani.github.io/Omni-RAG/)
     """)
     
     with gr.Row():
@@ -200,13 +200,13 @@ if __name__ == "__main__":
     print("[INFO] Launching Omni-RAG ...")
     port = int(os.getenv("PORT", 7860))
     
-    # Check if running inside Hugging Face Spaces
+    # Check if running inside Online Spaces
     is_hf_space = os.getenv("SPACE_ID") or os.getenv("HF_SPACE_ID")
-    print(f"[INFO] Port {port} | On-HF-Space: {is_hf_space}")
+    print(f"[INFO] Port {port} | On-Space: {is_hf_space}")
 
     # Run the framework
     if is_hf_space:
-        print("[INFO] Launching on Hugging Face Spaces...")
+        print("[INFO] Launching on Online Spaces...")
     else:
         print("[INFO] Launching on Local Machine...")
     try:

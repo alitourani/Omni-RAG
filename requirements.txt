@@ -1,5 +1,3 @@
-# Hugging Face Spaces Dependencies
-
 # Core Web & Gradio SDK
 gradio>=4.40.0
 fastapi>=0.115.0
