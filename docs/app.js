@@ -552,7 +552,6 @@ function setupEvents() {
   saveSettingsBtn.addEventListener('click', () => {
     state.backendUrl = backendUrlInput.value.replace(/\/$/, '');
     localStorage.setItem('omnirag_backend_url', state.backendUrl);
-    // settingsPanel.classList.add('hidden');
     checkBackendHealth();
   });
 
