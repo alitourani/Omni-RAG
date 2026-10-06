@@ -22,15 +22,15 @@ const SAMPLES = {
       {
         title: 'Table 2: Consolidated Statements of Operations (in Millions USD)',
         markdown: `| Segment / Metric | Q3 2024 | Q3 2023 | YoY Change | Operating Margin |
-| :--- | :--- | :--- | :--- | :--- |
-| Cloud & AI Infrastructure | $4,820 | $3,410 | +41.3% | 34.2% |
-| Enterprise Software | $3,150 | $2,980 | +5.7% | 28.6% |
-| Consumer Devices | $1,940 | $2,120 | -8.5% | 14.1% |
-| Professional Services | $690 | $610 | +13.1% | 11.4% |
-| **Total Net Revenues** | **$10,600** | **$9,120** | **+16.2%** | **27.8%** |
-| Research & Development | $1,840 | $1,520 | +21.1% | - |
-| Sales & Marketing | $1,310 | $1,290 | +1.5% | - |
-| **Operating Income** | **$2,946** | **$2,310** | **+27.5%** | **27.8%** |`
+                | :--- | :--- | :--- | :--- | :--- |
+                | Cloud & AI Infrastructure | $4,820 | $3,410 | +41.3% | 34.2% |
+                | Enterprise Software | $3,150 | $2,980 | +5.7% | 28.6% |
+                | Consumer Devices | $1,940 | $2,120 | -8.5% | 14.1% |
+                | Professional Services | $690 | $610 | +13.1% | 11.4% |
+                | **Total Net Revenues** | **$10,600** | **$9,120** | **+16.2%** | **27.8%** |
+                | Research & Development | $1,840 | $1,520 | +21.1% | - |
+                | Sales & Marketing | $1,310 | $1,290 | +1.5% | - |
+                | **Operating Income** | **$2,946** | **$2,310** | **+27.5%** | **27.8%** |`
       }
     ],
     generateSvg: (page) => {
@@ -147,12 +147,12 @@ const SAMPLES = {
       {
         title: 'Table 1: Benchmark Levelized Cost of Energy (LCOE) per MWh',
         markdown: `| Technology Type | 2020 LCOE ($/MWh) | 2024 LCOE ($/MWh) | 4-Year Reduction | Capacity Factor |
-| :--- | :--- | :--- | :--- | :--- |
-| Utility-Scale Solar PV | $42.50 | $28.10 | -33.9% | 27.4% |
-| Onshore Wind Turbine | $46.80 | $34.20 | -26.9% | 38.6% |
-| Offshore Wind Array | $89.20 | $61.50 | -31.1% | 49.2% |
-| Battery Storage (4-hr) | $145.00 | $82.40 | -43.2% | 88.0% |
-| Combined Cycle Gas | $58.10 | $64.80 | +11.5% | 61.2% |`
+                | :--- | :--- | :--- | :--- | :--- |
+                | Utility-Scale Solar PV | $42.50 | $28.10 | -33.9% | 27.4% |
+                | Onshore Wind Turbine | $46.80 | $34.20 | -26.9% | 38.6% |
+                | Offshore Wind Array | $89.20 | $61.50 | -31.1% | 49.2% |
+                | Battery Storage (4-hr) | $145.00 | $82.40 | -43.2% | 88.0% |
+                | Combined Cycle Gas | $58.10 | $64.80 | +11.5% | 61.2% |`
       }
     ],
     generateSvg: () => {
@@ -205,71 +205,6 @@ const SAMPLES = {
         <text x="400" y="420" fill="#f87171" font-size="12">$64.80/MWh</text>
         <text x="520" y="420" fill="#f87171" font-size="12">+11.5%</text>
         <text x="640" y="420" fill="#f1f5f9" font-size="12">61.2%</text>
-
-        <text x="380" y="950" fill="#475569" font-size="12">- Page 1 of 1 -</text>
-      </svg>`;
-    }
-  },
-
-  clinical: {
-    name: 'Clinical_Trial_Phase2_Cohort_Results.pdf',
-    title: 'Phase II Randomized Clinical Trial Biomarker & Cohort Matrix',
-    totalPages: 1,
-    tableBox: { top: 20, left: 5, width: 90, height: 50 },
-    tables: [
-      {
-        title: 'Table 4: Biomarker Response & Adverse Events by Dose Cohort',
-        markdown: `| Cohort Dose | Sample Size (N) | Objective Response (ORR) | Median PFS (mo) | Grade 3+ Adverse Events |
-| :--- | :--- | :--- | :--- | :--- |
-| Placebo | 45 | 4.4% (2/45) | 2.1 mo | 6.7% |
-| Low Dose (25 mg) | 48 | 27.1% (13/48) | 5.8 mo | 10.4% |
-| Mid Dose (50 mg) | 52 | 53.8% (28/52) | 9.4 mo | 13.5% |
-| High Dose (100 mg)| 50 | 58.0% (29/50) | 10.2 mo | 26.0% |`
-      }
-    ],
-    generateSvg: () => {
-      return `<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="background:#090d16; font-family:sans-serif;">
-        <rect x="20" y="20" width="760" height="960" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
-        <text x="50" y="70" fill="#8b5cf6" font-size="22" font-weight="bold">ONCOLOGY RESEARCH COLLABORATIVE</text>
-        <text x="50" y="98" fill="#94a3b8" font-size="14">PROTOCOL ONC-402 • PHASE II CLINICAL STUDY RESULTS</text>
-        <line x1="50" y1="115" x2="750" y2="115" stroke="#334155" stroke-width="1.5"/>
-
-        <text x="50" y="155" fill="#f8fafc" font-size="14" font-weight="600">Table 4: Efficacy and Safety Profile by Treatment Cohort</text>
-
-        <!-- Table -->
-        <rect x="50" y="180" width="700" height="32" fill="#1e293b" rx="4"/>
-        <text x="65" y="202" fill="#94a3b8" font-size="12" font-weight="bold">Cohort Dose</text>
-        <text x="240" y="202" fill="#94a3b8" font-size="12" font-weight="bold">Sample (N)</text>
-        <text x="360" y="202" fill="#94a3b8" font-size="12" font-weight="bold">ORR (Response)</text>
-        <text x="510" y="202" fill="#94a3b8" font-size="12" font-weight="bold">Progression-Free (PFS)</text>
-        <text x="670" y="202" fill="#94a3b8" font-size="12" font-weight="bold">Adverse</text>
-
-        <text x="65" y="240" fill="#f1f5f9" font-size="12">Placebo Control</text>
-        <text x="240" y="240" fill="#cbd5e1" font-size="12">45</text>
-        <text x="360" y="240" fill="#cbd5e1" font-size="12">4.4% (2/45)</text>
-        <text x="510" y="240" fill="#cbd5e1" font-size="12">2.1 months</text>
-        <text x="670" y="240" fill="#34d399" font-size="12">6.7%</text>
-
-        <line x1="50" y1="260" x2="750" y2="260" stroke="#1e293b"/>
-        <text x="65" y="285" fill="#f1f5f9" font-size="12">Low Dose (25 mg)</text>
-        <text x="240" y="285" fill="#cbd5e1" font-size="12">48</text>
-        <text x="360" y="285" fill="#f1f5f9" font-size="12">27.1% (13/48)</text>
-        <text x="510" y="285" fill="#f1f5f9" font-size="12">5.8 months</text>
-        <text x="670" y="285" fill="#34d399" font-size="12">10.4%</text>
-
-        <line x1="50" y1="305" x2="750" y2="305" stroke="#1e293b"/>
-        <text x="65" y="330" fill="#f1f5f9" font-size="12">Mid Dose (50 mg)</text>
-        <text x="240" y="330" fill="#cbd5e1" font-size="12">52</text>
-        <text x="360" y="330" fill="#8b5cf6" font-size="12" font-weight="bold">53.8% (28/52)</text>
-        <text x="510" y="330" fill="#8b5cf6" font-size="12" font-weight="bold">9.4 months</text>
-        <text x="670" y="330" fill="#f1f5f9" font-size="12">13.5%</text>
-
-        <line x1="50" y1="350" x2="750" y2="350" stroke="#1e293b"/>
-        <text x="65" y="375" fill="#f1f5f9" font-size="12">High Dose (100 mg)</text>
-        <text x="240" y="375" fill="#cbd5e1" font-size="12">50</text>
-        <text x="360" y="375" fill="#8b5cf6" font-size="12" font-weight="bold">58.0% (29/50)</text>
-        <text x="510" y="375" fill="#8b5cf6" font-size="12" font-weight="bold">10.2 months</text>
-        <text x="670" y="375" fill="#f87171" font-size="12" font-weight="bold">26.0%</text>
 
         <text x="380" y="950" fill="#475569" font-size="12">- Page 1 of 1 -</text>
       </svg>`;
@@ -504,7 +439,7 @@ function generateSimulatedInsight(query, sampleKey, model) {
       citations: [{ page: 1, score: 3.82 }],
       latency_ms: model === 'gemini' ? 385 : 510
     };
-  } else if (sampleKey === 'energy') {
+  } else {
     return {
       answer: `### Renewable Energy LCOE Cost Analysis [Page 1, Table 1]:\n\n` +
         `• **Steepest Cost Reduction**: **Battery Storage (4-hr)** exhibited the most dramatic cost plunge between 2020 and 2024, falling **-43.2%** from **$145.00/MWh** down to **$82.40/MWh**.\n` +
@@ -513,15 +448,6 @@ function generateSimulatedInsight(query, sampleKey, model) {
       tables: sample.tables,
       citations: [{ page: 1, score: 4.12 }],
       latency_ms: model === 'gemini' ? 340 : 490
-    };
-  } else {
-    return {
-      answer: `### Clinical Trial Dose-Response & Safety Findings [Page 1, Table 4]:\n\n` +
-        `• **Optimal Therapeutic Window**: The **Mid Dose (50 mg)** demonstrated the most favorable balance: high Objective Response Rate (ORR) of **53.8% (28/52)** and **9.4 months PFS**, while maintaining low Grade 3+ Adverse Events at only **13.5%**.\n` +
-        `• **High Dose Toxicity**: While High Dose (100 mg) achieved a marginally higher ORR (58.0%), Grade 3+ Adverse Events nearly doubled to **26.0%**, indicating dose-limiting toxicity.`,
-      tables: sample.tables,
-      citations: [{ page: 1, score: 3.95 }],
-      latency_ms: model === 'gemini' ? 360 : 520
     };
   }
 }
@@ -536,7 +462,7 @@ function setupEvents() {
       const url = backendUrlInput.value.replace(/\/$/, '');
       const res = await fetch(`${url}/api/health`, { signal: AbortSignal.timeout(4000) });
       if (res.ok) {
-        testResult.textContent = '✅ Connected successfully to Python FastAPI backend!';
+        testResult.textContent = '✅ Connected successfully to the Python FastAPI backend!';
         testResult.style.color = '#34d399';
       } else {
         testResult.textContent = `⚠️ Backend reachable but responded with status: ${res.status}`;
