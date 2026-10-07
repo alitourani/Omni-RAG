@@ -225,3 +225,11 @@ coverage/
 .env*
 
 !.env.example
+
+server.ts
+vite.config.ts
+tsconfig.json
+package.json
+package-lock.json
+bun.lock
+node_modules/
