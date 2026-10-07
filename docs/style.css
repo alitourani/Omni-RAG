@@ -280,9 +280,15 @@ code, pre, .font-mono {
   margin-bottom: 0.75rem;
 }
 
-/* Samples */
-.samples-section {
+/* Samples & Uploaded Files */
+.samples-section,
+.uploaded-files-section {
   margin-top: 1rem;
+}
+
+.uploaded-files-section {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.9rem;
 }
 
 .samples-header {
@@ -402,10 +408,19 @@ code, pre, .font-mono {
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.nav-btn:hover {
+.nav-btn:hover:not(:disabled) {
   background: #334155;
+}
+
+.nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: #1e293b;
+  background: #0f172a;
+  color: #64748b;
 }
 
 .page-indicator {

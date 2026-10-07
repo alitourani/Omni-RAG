@@ -5,10 +5,12 @@
 const state = {
   backendUrl: localStorage.getItem('omnirag_backend_url') || 'http://localhost:8000',
   isBackendConnected: false,
+  activeSource: 'sample', // 'sample' or 'upload'
   activeSampleKey: 'financial',
+  activeUploadedId: null,
   activePage: 1,
   selectedModel: 'gemini',
-  uploadedDoc: null,
+  uploadedFiles: [], // list of { id, name, type, url, totalPages, data }
 };
 
 // Built-in Realistic Sample Documents with Scanned Tabular Data
@@ -248,13 +250,25 @@ const answerBody = document.getElementById('answerBody');
 const extractedTableArea = document.getElementById('extractedTableArea');
 const exportCsvBtn = document.getElementById('exportCsvBtn');
 const fileInput = document.getElementById('fileInput');
+const docCountEl = document.getElementById('docCount');
+const uploadedFilesSection = document.getElementById('uploadedFilesSection');
+const uploadedChipsContainer = document.getElementById('uploadedChipsContainer');
+const sampleChipsContainer = document.getElementById('sampleChipsContainer');
 
 // Init
 function init() {
   backendUrlInput.value = state.backendUrl;
   checkBackendHealth();
+  updateDocCounter();
   renderSampleDocument(state.activeSampleKey, 1);
   setupEvents();
+}
+
+function updateDocCounter() {
+  const total = Object.keys(SAMPLES).length + state.uploadedFiles.length;
+  if (docCountEl) {
+    docCountEl.textContent = `${total} available`;
+  }
 }
 
 // Check Backend Health
@@ -278,15 +292,23 @@ async function checkBackendHealth() {
   }
 }
 
-// Render Document Preview
+// Render Document Preview (Sample)
 function renderSampleDocument(key, pageNum = 1) {
   const sample = SAMPLES[key];
   if (!sample) return;
 
+  state.activeSource = 'sample';
   state.activeSampleKey = key;
+  state.activeUploadedId = null;
   state.activePage = pageNum;
+
+  // Update active chips UI
+  document.querySelectorAll('.sample-chip').forEach(c => c.classList.remove('active'));
+  const activeBtn = document.querySelector(`.sample-chip[data-sample="${key}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+
   docName.textContent = sample.name;
-  docBadge.textContent = 'Sample Document';
+  docBadge.textContent = 'Built-in Sample';
   pageIndicator.textContent = `Page ${pageNum} of ${sample.totalPages}`;
 
   // Generate SVG Preview
@@ -306,8 +328,70 @@ function renderSampleDocument(key, pageNum = 1) {
     tableOverlayBox.style.display = 'none';
   }
 
+  // Pre and Next page buttons
   prevPageBtn.disabled = pageNum <= 1;
   nextPageBtn.disabled = pageNum >= sample.totalPages;
+}
+
+// Render Uploaded Document / Photo Preview
+function renderUploadedDocument(uploadId, pageNum = 1) {
+  const item = state.uploadedFiles.find(f => f.id === uploadId);
+  if (!item) return;
+
+  state.activeSource = 'upload';
+  state.activeUploadedId = uploadId;
+  state.activePage = pageNum;
+
+  // Update active chips UI
+  document.querySelectorAll('.sample-chip').forEach(c => c.classList.remove('active'));
+  const activeBtn = document.querySelector(`.sample-chip[data-upload-id="${uploadId}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  docName.textContent = item.name;
+  docBadge.textContent = item.isPhoto ? 'Uploaded Photo' : 'Uploaded File';
+  pageIndicator.textContent = `Page ${pageNum} of ${item.totalPages || 1}`;
+
+  activeDocImg.src = item.url;
+  tableOverlayBox.style.display = 'none';
+
+  // For photos and single-page uploads, prev and next buttons are strictly disabled
+  prevPageBtn.disabled = pageNum <= 1;
+  nextPageBtn.disabled = pageNum >= (item.totalPages || 1);
+}
+
+// Refresh the list of Uploaded File Chips
+function renderUploadedChips() {
+  if (!uploadedChipsContainer || !uploadedFilesSection) return;
+
+  if (state.uploadedFiles.length === 0) {
+    uploadedFilesSection.classList.add('hidden');
+    uploadedChipsContainer.innerHTML = '';
+    return;
+  }
+
+  uploadedFilesSection.classList.remove('hidden');
+  uploadedChipsContainer.innerHTML = '';
+
+  state.uploadedFiles.forEach(file => {
+    const btn = document.createElement('button');
+    btn.className = `sample-chip ${state.activeSource === 'upload' && state.activeUploadedId === file.id ? 'active' : ''}`;
+    btn.setAttribute('data-upload-id', file.id);
+
+    const icon = file.isPhoto ? '🖼️' : '📄';
+    btn.innerHTML = `${icon} <strong>${escapeHtml(file.name)}</strong> <span style="font-size:0.75rem;opacity:0.75;margin-left:4px;">(${file.isPhoto ? 'Photo' : '1 Page'})</span>`;
+
+    btn.addEventListener('click', () => {
+      renderUploadedDocument(file.id, 1);
+    });
+
+    uploadedChipsContainer.appendChild(btn);
+  });
+
+  updateDocCounter();
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // Parse markdown table to HTML table
@@ -378,6 +462,10 @@ async function executeQuery(queryText) {
   try {
     let result;
 
+    const currentDocName = state.activeSource === 'upload'
+      ? (state.uploadedFiles.find(f => f.id === state.activeUploadedId)?.name || 'Uploaded Document')
+      : (SAMPLES[state.activeSampleKey]?.name || 'Sample Document');
+
     if (state.isBackendConnected) {
       // Real API Call to Python Backend
       const res = await fetch(`${state.backendUrl}/api/query`, {
@@ -386,7 +474,7 @@ async function executeQuery(queryText) {
         body: JSON.stringify({
           query: queryText,
           model: model,
-          document_name: state.uploadedDoc?.name || SAMPLES[state.activeSampleKey].name
+          document_name: currentDocName
         })
       });
 
@@ -491,17 +579,31 @@ function setupEvents() {
     });
   });
 
-  // Pagination
+  // Pagination (Works for multi-page samples or multi-page documents; disabled for 1-page photos)
   prevPageBtn.addEventListener('click', () => {
-    if (state.activePage > 1) {
-      renderSampleDocument(state.activeSampleKey, state.activePage - 1);
+    if (state.activeSource === 'sample') {
+      if (state.activePage > 1) {
+        renderSampleDocument(state.activeSampleKey, state.activePage - 1);
+      }
+    } else if (state.activeSource === 'upload') {
+      const item = state.uploadedFiles.find(f => f.id === state.activeUploadedId);
+      if (item && state.activePage > 1) {
+        renderUploadedDocument(item.id, state.activePage - 1);
+      }
     }
   });
 
   nextPageBtn.addEventListener('click', () => {
-    const sample = SAMPLES[state.activeSampleKey];
-    if (sample && state.activePage < sample.totalPages) {
-      renderSampleDocument(state.activeSampleKey, state.activePage + 1);
+    if (state.activeSource === 'sample') {
+      const sample = SAMPLES[state.activeSampleKey];
+      if (sample && state.activePage < sample.totalPages) {
+        renderSampleDocument(state.activeSampleKey, state.activePage + 1);
+      }
+    } else if (state.activeSource === 'upload') {
+      const item = state.uploadedFiles.find(f => f.id === state.activeUploadedId);
+      if (item && state.activePage < (item.totalPages || 1)) {
+        renderUploadedDocument(item.id, state.activePage + 1);
+      }
     }
   });
 
@@ -530,28 +632,62 @@ function setupEvents() {
   // Export CSV
   exportCsvBtn.addEventListener('click', exportCurrentTableToCsv);
 
-  // File Upload
+  // File Upload (Photos or PDFs)
   fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (!files || files.length === 0) return;
 
-    docName.textContent = file.name;
-    docBadge.textContent = 'Custom Upload';
-    pageIndicator.textContent = 'Page 1 of 1';
-    tableOverlayBox.style.display = 'none';
+    files.forEach((file) => {
+      const isPhoto = file.type.startsWith('image/');
+      const fileId = `upload_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        activeDocImg.src = evt.target.result;
-        state.uploadedDoc = { name: file.name, data: evt.target.result };
-      };
-      reader.readAsDataURL(file);
-    } else {
-      // PDF or other document
-      activeDocImg.src = 'data:image/svg+xml;utf8,<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="background:%23090d16;"><rect x="20" y="20" width="760" height="960" fill="%230f172a" rx="8"/><text x="400" y="450" fill="%2338bdf8" font-size="28" text-anchor="middle" font-family="sans-serif">PDF Uploaded: ' + encodeURIComponent(file.name) + '</text><text x="400" y="500" fill="%2394a3b8" font-size="16" text-anchor="middle" font-family="sans-serif">Ready for Multimodal RAG Extraction</text></svg>';
-      state.uploadedDoc = { name: file.name };
-    }
+      if (isPhoto) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const fileRecord = {
+            id: fileId,
+            name: file.name,
+            type: file.type,
+            isPhoto: true,
+            totalPages: 1, // Single-page photo
+            url: evt.target.result,
+            data: evt.target.result
+          };
+
+          state.uploadedFiles.push(fileRecord);
+          renderUploadedChips();
+          renderUploadedDocument(fileId, 1);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // PDF or scanned document
+        const placeholderSvg = `<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="background:#090d16; font-family:sans-serif;">
+          <rect x="20" y="20" width="760" height="960" fill="#0f172a" rx="8" stroke="#1e293b" stroke-width="2"/>
+          <text x="400" y="440" fill="#38bdf8" font-size="24" text-anchor="middle" font-weight="bold">PDF Document: ${escapeHtml(file.name)}</text>
+          <text x="400" y="480" fill="#94a3b8" font-size="14" text-anchor="middle">Ready for Multimodal Vision &amp; Tabular Extraction</text>
+          <line x1="150" y1="520" x2="650" y2="520" stroke="#334155" stroke-width="2"/>
+          <text x="400" y="560" fill="#64748b" font-size="12" text-anchor="middle">Ask questions about tables, metrics, or footnotes</text>
+        </svg>`;
+        const url = `data:image/svg+xml;utf8,${encodeURIComponent(placeholderSvg)}`;
+
+        const fileRecord = {
+          id: fileId,
+          name: file.name,
+          type: file.type,
+          isPhoto: false,
+          totalPages: 1,
+          url: url,
+          data: null
+        };
+
+        state.uploadedFiles.push(fileRecord);
+        renderUploadedChips();
+        renderUploadedDocument(fileId, 1);
+      }
+    });
+
+    // Reset input so re-uploading same file name triggers change
+    fileInput.value = '';
   });
 }
 
