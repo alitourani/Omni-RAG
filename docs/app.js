@@ -181,6 +181,7 @@ const docCountEl = document.getElementById('docCount');
 const uploadedFilesSection = document.getElementById('uploadedFilesSection');
 const uploadedChipsContainer = document.getElementById('uploadedChipsContainer');
 const sampleChipsContainer = document.getElementById('sampleChipsContainer');
+const uploadStatusText = document.getElementById('uploadStatusText');
 
 // Init
 function init() {
@@ -192,23 +193,24 @@ function init() {
 }
 
 function updateDocCounter() {
-  // Can be also: Object.keys(SAMPLES).length + state.uploadedFiles.length
   const total = state.uploadedFiles.length;
   if (docCountEl) {
-    docCountEl.textContent = `${total} available`;
+    docCountEl.textContent = `${total} uploaded`;
   }
 }
 
-// Check Backend Health
+// Check Backend Health and Sync Indexed Documents
 async function checkBackendHealth() {
   backendStatusText.textContent = 'Testing backend...';
   try {
     const res = await fetch(`${state.backendUrl}/api/health`, { method: 'GET', signal: AbortSignal.timeout(3000) });
     if (res.ok) {
-      const data = await res.json();
       state.isBackendConnected = true;
       statusDot.classList.add('online');
       backendStatusText.textContent = 'Python Backend Live';
+
+      // Automatically sync indexed documents from the Python backend
+      syncBackendDocuments();
       return true;
     }
   } catch (err) {
@@ -217,6 +219,51 @@ async function checkBackendHealth() {
     statusDot.classList.remove('online');
     backendStatusText.textContent = 'Demo Mode (Offline)';
     return false;
+  }
+}
+
+// Fetch documents indexed on Python backend (/api/documents)
+async function syncBackendDocuments() {
+  if (!state.isBackendConnected) return;
+
+  try {
+    const res = await fetch(`${state.backendUrl}/api/documents`);
+    if (res.ok) {
+      const data = await res.json();
+      const backendDocs = data.documents || [];
+
+      // Merge backend documents into state if not already present
+      backendDocs.forEach((doc) => {
+        const existing = state.uploadedFiles.find(f => f.name === doc.name);
+        if (!existing) {
+          const fileId = `be_${encodeURIComponent(doc.name)}`;
+          const isPhoto = /\.(png|jpe?g|webp)$/i.test(doc.name);
+
+          let previewUrl = doc.preview_image;
+          if (!previewUrl) {
+            const svg = `<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="background:#090d16;"><rect x="20" y="20" width="760" height="960" fill="#0f172a" rx="8"/><text x="400" y="450" fill="#38bdf8" font-size="26" text-anchor="middle" font-family="sans-serif">Document: ${escapeHtml(doc.name)}</text><text x="400" y="495" fill="#94a3b8" font-size="15" text-anchor="middle" font-family="sans-serif">${doc.page_count} Page(s) Indexed in Backend</text></svg>`;
+            previewUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+          }
+
+          state.uploadedFiles.push({
+            id: fileId,
+            name: doc.name,
+            type: isPhoto ? 'image/jpeg' : 'application/pdf',
+            isPhoto: isPhoto,
+            totalPages: doc.page_count || 1,
+            url: previewUrl,
+            syncedWithBackend: true,
+          });
+        } else {
+          existing.syncedWithBackend = true;
+          if (doc.page_count) existing.totalPages = doc.page_count;
+        }
+      });
+
+      renderUploadedChips();
+    }
+  } catch (e) {
+    console.warn('Could not sync /api/documents:', e);
   }
 }
 
@@ -550,15 +597,16 @@ function setupEvents() {
   // Export CSV
   exportCsvBtn.addEventListener('click', exportCurrentTableToCsv);
 
-  // File Upload (Photos or PDFs)
-  fileInput.addEventListener('change', (e) => {
+  // File Upload (Photos or PDFs) - Ingest into Python Backend + Local Preview
+  fileInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
     if (!files || files.length === 0) return;
 
-    files.forEach((file) => {
+    for (const file of files) {
       const isPhoto = file.type.startsWith('image/');
       const fileId = `upload_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
+      // 1. Immediate visual preview in frontend
       if (isPhoto) {
         const reader = new FileReader();
         reader.onload = (evt) => {
@@ -569,7 +617,8 @@ function setupEvents() {
             isPhoto: true,
             totalPages: 1, // Single-page photo
             url: evt.target.result,
-            data: evt.target.result
+            data: evt.target.result,
+            uploading: true
           };
 
           state.uploadedFiles.push(fileRecord);
@@ -578,13 +627,13 @@ function setupEvents() {
         };
         reader.readAsDataURL(file);
       } else {
-        // PDF or scanned document
+        // PDF or document preview SVG
         const placeholderSvg = `<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="background:#090d16; font-family:sans-serif;">
           <rect x="20" y="20" width="760" height="960" fill="#0f172a" rx="8" stroke="#1e293b" stroke-width="2"/>
           <text x="400" y="440" fill="#38bdf8" font-size="24" text-anchor="middle" font-weight="bold">PDF Document: ${escapeHtml(file.name)}</text>
-          <text x="400" y="480" fill="#94a3b8" font-size="14" text-anchor="middle">Ready for Multimodal Vision &amp; Tabular Extraction</text>
+          <text x="400" y="480" fill="#94a3b8" font-size="14" text-anchor="middle">Ingesting into Omni-RAG Vector / Multimodal Index...</text>
           <line x1="150" y1="520" x2="650" y2="520" stroke="#334155" stroke-width="2"/>
-          <text x="400" y="560" fill="#64748b" font-size="12" text-anchor="middle">Ask questions about tables, metrics, or footnotes</text>
+          <text x="400" y="560" fill="#64748b" font-size="12" text-anchor="middle">Ready for Multimodal Retrieval once uploaded</text>
         </svg>`;
         const url = `data:image/svg+xml;utf8,${encodeURIComponent(placeholderSvg)}`;
 
@@ -595,14 +644,70 @@ function setupEvents() {
           isPhoto: false,
           totalPages: 1,
           url: url,
-          data: null
+          data: null,
+          uploading: true
         };
 
         state.uploadedFiles.push(fileRecord);
         renderUploadedChips();
         renderUploadedDocument(fileId, 1);
       }
-    });
+
+      // 2. Post file to backend /api/upload if backend is available
+      if (state.isBackendConnected) {
+        if (uploadStatusText) {
+          uploadStatusText.className = 'upload-status-indicator uploading';
+          uploadStatusText.textContent = `⏳ Ingesting "${file.name}" to Python backend...`;
+        }
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const res = await fetch(`${state.backendUrl}/api/upload`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.detail || `Server returned ${res.status}`);
+          }
+
+          const uploadData = await res.json();
+          const target = state.uploadedFiles.find(f => f.id === fileId);
+          if (target) {
+            target.uploading = false;
+            target.syncedWithBackend = true;
+            if (uploadData.pages_indexed) {
+              target.totalPages = uploadData.pages_indexed;
+            }
+          }
+
+          if (uploadStatusText) {
+            uploadStatusText.className = 'upload-status-indicator success';
+            uploadStatusText.textContent = `✅ "${file.name}" indexed successfully (${uploadData.pages_indexed || 1} page${uploadData.pages_indexed === 1 ? '' : 's'})!`;
+            setTimeout(() => {
+              if (uploadStatusText.classList.contains('success')) uploadStatusText.textContent = '';
+            }, 5000);
+          }
+
+          // Sync full documents list from backend
+          syncBackendDocuments();
+        } catch (err) {
+          console.error('Failed to upload file to backend:', err);
+          if (uploadStatusText) {
+            uploadStatusText.className = 'upload-status-indicator error';
+            uploadStatusText.textContent = `⚠️ Local preview active, but backend upload failed: ${err.message}`;
+          }
+        }
+      } else {
+        if (uploadStatusText) {
+          uploadStatusText.className = 'upload-status-indicator';
+          uploadStatusText.textContent = `ℹ️ Loaded in local browser preview (Backend offline).`;
+        }
+      }
+    }
 
     // Reset input so re-uploading same file name triggers change
     fileInput.value = '';

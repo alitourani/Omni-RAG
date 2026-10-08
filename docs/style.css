@@ -280,6 +280,26 @@ code, pre, .font-mono {
   margin-bottom: 0.75rem;
 }
 
+.upload-status-indicator {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  min-height: 1.2rem;
+  transition: all 0.2s;
+}
+
+.upload-status-indicator.success {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.upload-status-indicator.uploading {
+  color: #38bdf8;
+}
+
+.upload-status-indicator.error {
+  color: #f87171;
+}
+
 /* Samples & Uploaded Files */
 .samples-section,
 .uploaded-files-section {
