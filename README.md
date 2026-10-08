@@ -4,6 +4,15 @@ A modular, lightweight **Multimodal RAG** framework with a Python back-end and a
 
 It contains a Python framework with a multimodal RAG pipeline, document parser, and Gemini/Llama provider, along with a *FastAPI REST API* for communication. It also has a live RAG workspace to handle files, a model switcher, and some benchmarks.
 
+## 🚀 Getting Started
+
+Omni-RAG contains a user interface **front-end** (HTML, CSS, JS) and a RAG **back-end** (Python).
+The simplest way to run the system is as below:
+
+1. Run a *health check* ([link](https://omni-rag-api.onrender.com/api/health)) on the server to wake it up (if it is in the idle mode).
+2. Run the GUI web-page ([link](https://alitourani.github.io/Omni-RAG/)).
+3. Upload some documents and start querying!
+
 ## 🔗 Links
 
 ### **UI-based:**
