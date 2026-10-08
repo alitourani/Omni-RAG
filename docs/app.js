@@ -138,79 +138,6 @@ const SAMPLES = {
         </svg>`;
       }
     }
-  },
-
-  energy: {
-    name: 'Global_Energy_LCOE_Benchmark_2024.pdf',
-    title: 'Global Clean Energy Generation & Levelized Cost Comparison (LCOE)',
-    totalPages: 1,
-    tableBox: { top: 18, left: 5, width: 90, height: 55 },
-    tables: [
-      {
-        title: 'Table 1: Benchmark Levelized Cost of Energy (LCOE) per MWh',
-        markdown: `| Technology Type | 2020 LCOE ($/MWh) | 2024 LCOE ($/MWh) | 4-Year Reduction | Capacity Factor |
-                | :--- | :--- | :--- | :--- | :--- |
-                | Utility-Scale Solar PV | $42.50 | $28.10 | -33.9% | 27.4% |
-                | Onshore Wind Turbine | $46.80 | $34.20 | -26.9% | 38.6% |
-                | Offshore Wind Array | $89.20 | $61.50 | -31.1% | 49.2% |
-                | Battery Storage (4-hr) | $145.00 | $82.40 | -43.2% | 88.0% |
-                | Combined Cycle Gas | $58.10 | $64.80 | +11.5% | 61.2% |`
-      }
-    ],
-    generateSvg: () => {
-      return `<svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="background:#090d16; font-family:sans-serif;">
-        <rect x="20" y="20" width="760" height="960" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
-        <text x="50" y="70" fill="#10b981" font-size="22" font-weight="bold">GLOBAL ENERGY TRANSITION COMMISSION</text>
-        <text x="50" y="98" fill="#94a3b8" font-size="14">RESEARCH REPORT: LEVELIZED COST OF ELECTRICITY (LCOE) BENCHMARK</text>
-        <line x1="50" y1="115" x2="750" y2="115" stroke="#334155" stroke-width="1.5"/>
-
-        <text x="50" y="155" fill="#f8fafc" font-size="14" font-weight="600">Table 1: Generation Cost per Megawatt-Hour (Unsubsidized Global Averages)</text>
-
-        <!-- Table -->
-        <rect x="50" y="180" width="700" height="32" fill="#1e293b" rx="4"/>
-        <text x="65" y="202" fill="#94a3b8" font-size="12" font-weight="bold">Technology Type</text>
-        <text x="280" y="202" fill="#94a3b8" font-size="12" font-weight="bold">2020 LCOE</text>
-        <text x="400" y="202" fill="#94a3b8" font-size="12" font-weight="bold">2024 LCOE</text>
-        <text x="520" y="202" fill="#94a3b8" font-size="12" font-weight="bold">4-Yr Change</text>
-        <text x="640" y="202" fill="#94a3b8" font-size="12" font-weight="bold">Capacity Factor</text>
-
-        <text x="65" y="240" fill="#f1f5f9" font-size="12">Utility-Scale Solar PV</text>
-        <text x="280" y="240" fill="#cbd5e1" font-size="12">$42.50/MWh</text>
-        <text x="400" y="240" fill="#10b981" font-size="12" font-weight="bold">$28.10/MWh</text>
-        <text x="520" y="240" fill="#34d399" font-size="12" font-weight="bold">-33.9%</text>
-        <text x="640" y="240" fill="#f1f5f9" font-size="12">27.4%</text>
-
-        <line x1="50" y1="260" x2="750" y2="260" stroke="#1e293b"/>
-        <text x="65" y="285" fill="#f1f5f9" font-size="12">Onshore Wind Turbine</text>
-        <text x="280" y="285" fill="#cbd5e1" font-size="12">$46.80/MWh</text>
-        <text x="400" y="285" fill="#10b981" font-size="12" font-weight="bold">$34.20/MWh</text>
-        <text x="520" y="285" fill="#34d399" font-size="12">-26.9%</text>
-        <text x="640" y="285" fill="#f1f5f9" font-size="12">38.6%</text>
-
-        <line x1="50" y1="305" x2="750" y2="305" stroke="#1e293b"/>
-        <text x="65" y="330" fill="#f1f5f9" font-size="12">Offshore Wind Array</text>
-        <text x="280" y="330" fill="#cbd5e1" font-size="12">$89.20/MWh</text>
-        <text x="400" y="330" fill="#10b981" font-size="12">$61.50/MWh</text>
-        <text x="520" y="330" fill="#34d399" font-size="12">-31.1%</text>
-        <text x="640" y="330" fill="#f1f5f9" font-size="12">49.2%</text>
-
-        <line x1="50" y1="350" x2="750" y2="350" stroke="#1e293b"/>
-        <text x="65" y="375" fill="#f1f5f9" font-size="12">Battery Storage (4-hr)</text>
-        <text x="280" y="375" fill="#cbd5e1" font-size="12">$145.00/MWh</text>
-        <text x="400" y="375" fill="#38bdf8" font-size="12" font-weight="bold">$82.40/MWh</text>
-        <text x="520" y="375" fill="#34d399" font-size="12" font-weight="bold">-43.2%</text>
-        <text x="640" y="375" fill="#f1f5f9" font-size="12">88.0%</text>
-
-        <line x1="50" y1="395" x2="750" y2="395" stroke="#1e293b"/>
-        <text x="65" y="420" fill="#f1f5f9" font-size="12">Combined Cycle Gas</text>
-        <text x="280" y="420" fill="#cbd5e1" font-size="12">$58.10/MWh</text>
-        <text x="400" y="420" fill="#f87171" font-size="12">$64.80/MWh</text>
-        <text x="520" y="420" fill="#f87171" font-size="12">+11.5%</text>
-        <text x="640" y="420" fill="#f1f5f9" font-size="12">61.2%</text>
-
-        <text x="380" y="950" fill="#475569" font-size="12">- Page 1 of 1 -</text>
-      </svg>`;
-    }
   }
 };
 
@@ -265,7 +192,8 @@ function init() {
 }
 
 function updateDocCounter() {
-  const total = Object.keys(SAMPLES).length + state.uploadedFiles.length;
+  // Can be also: Object.keys(SAMPLES).length + state.uploadedFiles.length
+  const total = state.uploadedFiles.length;
   if (docCountEl) {
     docCountEl.textContent = `${total} available`;
   }
@@ -520,22 +448,12 @@ function generateSimulatedInsight(query, sampleKey, model) {
   if (sampleKey === 'financial') {
     return {
       answer: `### Key Financial Insights Extracted from Table 2 [Page 1]:\n\n` +
-        `• **Revenue Growth Driver**: The **Cloud & AI Infrastructure** division is the highest-growth segment, surging **+41.3% YoY** to **$4,820M** (up from $3,410M in Q3 2023), also delivering the highest operating margin at **34.2%**.\n` +
-        `• **Segment Headwinds**: **Consumer Devices** contracted **-8.5% YoY** to **$1,940M**, with compressed margins of **14.1%**, attributed in Note 2 to foreign supply constraints.\n` +
-        `• **Total Performance**: Total Net Revenues expanded **+16.2%** to **$10,600M**, while Operating Income outperformed revenue growth with a **+27.5% increase** to **$2,946M** due to disciplined SG&A expense control.`,
+        `- **Revenue Growth Driver**: The **Cloud & AI Infrastructure** division is the highest-growth segment, surging **+41.3% YoY** to **$4,820M** (up from $3,410M in Q3 2023), also delivering the highest operating margin at **34.2%**.\n` +
+        `- **Segment Headwinds**: **Consumer Devices** contracted **-8.5% YoY** to **$1,940M**, with compressed margins of **14.1%**, attributed in Note 2 to foreign supply constraints.\n` +
+        `- **Total Performance**: Total Net Revenues expanded **+16.2%** to **$10,600M**, while Operating Income outperformed revenue growth with a **+27.5% increase** to **$2,946M** due to disciplined SG&A expense control.`,
       tables: sample.tables,
       citations: [{ page: 1, score: 3.82 }],
       latency_ms: model === 'gemini' ? 385 : 510
-    };
-  } else {
-    return {
-      answer: `### Renewable Energy LCOE Cost Analysis [Page 1, Table 1]:\n\n` +
-        `• **Steepest Cost Reduction**: **Battery Storage (4-hr)** exhibited the most dramatic cost plunge between 2020 and 2024, falling **-43.2%** from **$145.00/MWh** down to **$82.40/MWh**.\n` +
-        `• **Lowest Overall Cost**: **Utility-Scale Solar PV** remains the cheapest bulk electricity generation technology at **$28.10/MWh** (-33.9% 4-year decline).\n` +
-        `• **Fossil Comparison**: Unlike renewables, **Combined Cycle Gas** increased in cost by **+11.5%** to **$64.80/MWh**, largely driven by variable fuel price inputs.`,
-      tables: sample.tables,
-      citations: [{ page: 1, score: 4.12 }],
-      latency_ms: model === 'gemini' ? 340 : 490
     };
   }
 }

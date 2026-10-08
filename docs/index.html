@@ -51,7 +51,7 @@
       <!-- Left Column: Document Upload & Sample Selector -->
       <section class="panel left-panel">
         <div class="panel-header">
-          <h2>I. Documents & Tables</h2>
+          <h2>Sources (Documents & Tables)</h2>
           <span class="counter" id="docCount">0 loaded</span>
         </div>
 
@@ -83,9 +83,6 @@
             <button class="sample-chip active" data-sample="financial">
               📊 Corporations Q3 Earnings & Balance Sheet
             </button>
-            <button class="sample-chip" data-sample="energy">
-              ⚡ Global Clean Energy Cost
-            </button>
           </div>
         </div>
 
@@ -110,7 +107,7 @@
       <!-- Right Column: Query & Multimodal Insight Viewer -->
       <section class="panel right-panel">
         <div class="panel-header">
-          <h2>2. Multimodal Extraction & Insights</h2>
+          <h2>Multimodal Knowledge Retrieval</h2>
           
           <!-- Model Selector -->
           <div class="model-selector-bar">
@@ -118,7 +115,7 @@
               <input type="radio" name="model" value="gemini" checked>
               <span class="pill-content">
                 <span class="pill-icon">✨</span>
-                <span>Gemini 2.5 Flash</span>
+                <span>Gemini 3.8 Flash</span>
                 <span class="tag-free">Free</span>
               </span>
             </label>
@@ -152,8 +149,7 @@
         <!-- Quick Question Suggestions -->
         <div class="quick-questions" id="quickQuestions">
           <span class="quick-label">Try asking:</span>
-          <button class="quick-btn" data-query="Extract the revenue table and calculate the YoY growth percentage for each division">"Calculate YoY revenue growth"</button>
-          <button class="quick-btn" data-query="What were the total operating expenses and which department had the largest increase?">"Operating expenses breakdown"</button>
+          <button class="quick-btn" data-query="What were the total expenses and which department had the largest increase?">"Operating expenses breakdown"</button>
           <button class="quick-btn" data-query="Summarize all table footnotes and highlight any reported risks or exceptions">"Table footnotes & risks"</button>
         </div>
 
@@ -175,7 +171,7 @@
           <div class="insight-card hidden" id="insightCard">
             <div class="insight-header">
               <div class="insight-meta">
-                <span class="badge-success" id="resultModelBadge">✨ Gemini 2.5 Flash</span>
+                <span class="badge-success" id="resultModelBadge">✨ Gemini 3.8 Flash</span>
                 <span class="latency-text" id="resultLatency">420ms</span>
                 <span class="citation-chip" id="resultCitation">Page 1, Table 2</span>
               </div>
