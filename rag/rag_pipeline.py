@@ -5,7 +5,7 @@ Covers:
 1. Document Ingestion & Page Rendering
 2. Visual & Tabular Chunk Indexing
 3. Hybrid Retrieval (Top-k visual pages + table snippets)
-4. Model Dispatcher (Gemini 3.8 Flash / Llama 3.2 Vision)
+4. Model Dispatcher (Gemini 3.8 Flash / Quen 3.6)
 """
 import re
 from dataclasses import dataclass
@@ -27,7 +27,7 @@ class MultimodalRAGPipeline:
     def __init__(
         self,
         gemini_model: str = "gemini-3.8-flash",
-        llama_model: str = "llama-3.2-11b-vision-preview",
+        llama_model: str = "qwen/qwen3.6-27b",
         dpi: int = 150
     ):
         self.parser = DocumentParser(dpi=dpi)

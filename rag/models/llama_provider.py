@@ -1,7 +1,7 @@
 """
 Llama Vision Multimodal Provider for OmniRAG.
-Supports free-tier Llama 3.2 Vision via:
-1. Groq Cloud (Free API tier: llama-3.2-11b-vision-preview)
+Supports free-tier Quen 3.6 via:
+1. Groq Cloud (Free API tier: qwen/qwen3.6-27b)
 2. Local Ollama (100% offline & free: llama3.2-vision:11b)
 3. Hugging Face free Inference API
 """
@@ -27,7 +27,7 @@ class LlamaVisionProvider(BaseMultimodalLLM):
     def __init__(
         self,
         provider_mode: str = "groq",  # "groq" or "ollama"
-        model_name: str = "llama-3.2-11b-vision-preview",
+        model_name: str = "qwen/qwen3.6-27b",
         api_key: Optional[str] = None,
         ollama_base_url: str = "http://localhost:11434"
     ):

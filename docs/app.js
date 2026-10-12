@@ -430,7 +430,7 @@ async function executeQuery(queryText) {
   welcomePlaceholder.classList.add('hidden');
   insightCard.classList.add('hidden');
   loadingState.classList.remove('hidden');
-  loadingText.textContent = `Analyzing visual page & tabular chunks with [${model === 'gemini' ? 'Gemini 3.8 Flash' : 'Llama 3.2 Vision'}]...`;
+  loadingText.textContent = `Analyzing visual page & tabular chunks with [${model === 'gemini' ? 'Gemini 3.8 Flash' : 'Quen 3.6'}]...`;
 
   const startTime = performance.now();
 
@@ -467,7 +467,7 @@ async function executeQuery(queryText) {
     loadingState.classList.add('hidden');
     insightCard.classList.remove('hidden');
 
-    resultModelBadge.textContent = model === 'gemini' ? '✨ Gemini 3.8 Flash' : '🦙 Llama 3.2 Vision';
+    resultModelBadge.textContent = model === 'gemini' ? '✨ Gemini 3.8 Flash' : '🦙 Quen 3.6';
     resultLatency.textContent = `${result.latency_ms || elapsed} ms`;
     resultCitation.textContent = (result.citations && result.citations[0]) ? `Page ${result.citations[0].page || 1}, Table 1` : 'Page 1, Visual Table Match';
 
