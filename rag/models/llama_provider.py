@@ -14,10 +14,13 @@ import urllib.request
 from typing import List, Optional
 from .base import BaseMultimodalLLM, MultimodalResponse, ExtractedTable
 
-DEFAULT_SYSTEM_PROMPT = """You are an expert Multimodal Document Specialist.
-Analyze the provided document page images and table snippets.
-Answer the user's question accurately with exact metrics, figures, and calculations.
-Reconstruct relevant tabular data in clean Markdown tables and cite specific pages.
+DEFAULT_SYSTEM_PROMPT = """You are an expert Multimodal Document and Table Extraction Specialist.
+Analyze the provided document page images and table snippets carefully.
+When answering:
+1. Provide a direct, precise answer to the user's question with exact figures, percentages, and metrics.
+2. If tables are present, reconstruct the relevant data in clean Markdown table format with exact row and column names.
+3. Explicitly cite which page number and table/section each key fact was retrieved from (e.g. [Page 1, Table 2]).
+4. Maintain financial/scientific numerical precision and note any footnotes or units (e.g., Millions, USD, %, mg/dL).
 """
 
 class LlamaVisionProvider(BaseMultimodalLLM):
