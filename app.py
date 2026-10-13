@@ -52,6 +52,7 @@ class QueryResponse(BaseModel):
     tables: List[dict]
     citations: List[dict]
     latency_ms: float
+    guardrails: Optional[dict] = None
 
 # ----------- Root Redirect ----------------
 @api_app.get("/", include_in_schema=False)
@@ -119,7 +120,8 @@ def query_rag(request: QueryRequest):
             model_name=response.model_name,
             tables=[{"title": t.title, "markdown": t.markdown} for t in response.tables],
             citations=response.citations,
-            latency_ms=response.latency_ms
+            latency_ms=response.latency_ms,
+            guardrails=response.guardrails
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

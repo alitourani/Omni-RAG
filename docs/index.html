@@ -173,6 +173,7 @@
             <div class="insight-header">
               <div class="insight-meta">
                 <span class="badge-success" id="resultModelBadge">✨ Gemini 3.8 Flash</span>
+                <span class="guardrail-badge badge-verified" id="guardrailBadge">🛡️ Guardrail: Verified (95%)</span>
                 <span class="latency-text" id="resultLatency">420ms</span>
                 <span class="citation-chip" id="resultCitation">Page 1, Table 2</span>
               </div>
@@ -204,6 +205,9 @@
                 <div class="trace-item">
                   <strong>Visual Grounding:</strong> <span>Detected bounding box: [y: 180px, x: 40px, w: 720px, h: 420px]</span>
                 </div>
+                <div class="trace-item">
+                  <strong>Guardrails Check:</strong> <span id="traceGuardrail">Passed verification, citation checks, and prompt safety.</span>
+                </div>
               </div>
             </details>
           </div>
@@ -213,7 +217,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <p>Omni-RAG Framework | Designed for Python Backends | Compatible with free-tier Gemini & Quen 3.6</p>
+      <p>Omni-RAG Framework | Python Backend | Compatible with Gemini & Qwen</p>
     </footer>
   </div>
 

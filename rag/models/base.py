@@ -22,6 +22,7 @@ class MultimodalResponse:
     citations: List[Dict[str, Any]] = field(default_factory=list)
     latency_ms: float = 0.0
     raw_text: str = ""
+    guardrails: Dict[str, Any] = field(default_factory=dict)
 
 class BaseMultimodalLLM(ABC):
     """

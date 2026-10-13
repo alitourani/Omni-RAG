@@ -15,6 +15,7 @@ from .models.gemini_provider import GeminiProvider
 from .models.llama_provider import LlamaVisionProvider
 from .parsers.doc_parser import DocumentParser, DocumentPage
 from .models.base import BaseMultimodalLLM, MultimodalResponse
+from .guardrails import RAGGuardrails
 
 @dataclass
 class RetrievalResult:
@@ -32,6 +33,7 @@ class MultimodalRAGPipeline:
     ):
         self.parser = DocumentParser(dpi=dpi)
         self.documents: Dict[str, List[DocumentPage]] = {}
+        self.guardrails = RAGGuardrails()
         
         # Initialize providers lazily
         self._gemini_model_name = gemini_model
@@ -135,22 +137,39 @@ class MultimodalRAGPipeline:
         top_k: int = 2
     ) -> MultimodalResponse:
         """
-        Executes end-to-end Multimodal RAG:
+        Executes end-to-end Multimodal RAG with Guardrails:
         
-        1. Retrieval of visual pages & table crops
-        2. Prompt formatting
+        1. Input Guardrails (injection check, length, emptiness)
+        2. Retrieval of visual pages & table crops
         3. Multimodal LLM synthesis
+        4. Output Guardrails (numerical fidelity, fact checking, citation validation)
         """
         if not self.documents:
             raise ValueError("No documents have been ingested yet. Call ingest_document() first.")
 
-        # 1. Retrieve
+        # Guardrail Step 1: Input Validation
+        input_check = self.guardrails.validate_input(question)
+        if not input_check["valid"]:
+            return MultimodalResponse(
+                answer=f"🛡️ **Guardrail Refusal**: {input_check['reason']}",
+                model_name="Omni-RAG Guardrail",
+                guardrails={
+                    "status": "BLOCKED",
+                    "confidence_score": 0.0,
+                    "citations_valid": False,
+                    "numbers_verified": False,
+                    "grounded_in_context": False,
+                    "flags": [input_check["reason"]]
+                }
+            )
+
+        # 2. Retrieve
         retrieval = self.retrieve_relevant_pages(question, document_name=document_name, top_k=top_k)
         
-        # 2. Extract base64 images
+        # 3. Extract base64 images
         page_images = [p.image_base64 for p in retrieval.pages]
 
-        # 3. Dispatch to selected model
+        # 4. Dispatch to selected model
         if model_type.lower() == "gemini":
             provider = self.gemini_provider
         elif model_type.lower() == "llama":
@@ -169,5 +188,26 @@ class MultimodalRAGPipeline:
             {"page": p_num, "score": round(score, 2)}
             for p_num, score in zip(retrieval.page_numbers, retrieval.scores)
         ]
+
+        # Guardrail Step 2: Output Verification & Fact-Checking
+        guard_result = self.guardrails.verify_response(
+            query=question,
+            answer=response.answer,
+            context_text=retrieval.table_context,
+            citations=response.citations,
+            retrieval_scores=retrieval.scores
+        )
+
+        response.guardrails = {
+            "status": guard_result.status,
+            "confidence_score": guard_result.confidence_score,
+            "citations_valid": guard_result.citations_valid,
+            "numbers_verified": guard_result.numbers_verified,
+            "grounded_in_context": guard_result.grounded_in_context,
+            "flags": guard_result.flags
+        }
+
+        if guard_result.sanitized_answer:
+            response.answer = guard_result.sanitized_answer
 
         return response
