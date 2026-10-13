@@ -174,7 +174,7 @@ with gr.Blocks() as demo:
             # File
             model_selector = gr.Radio(
                 label="Multimodal LLM (Free Versions)",
-                choices=["Gemini 3.8 Flash", "Quen 3.6 (Groq)"],
+                choices=["Gemini 3.8 Flash", "Qwen 3.6 (Groq)"],
                 value="Gemini 3.8 Flash"
             )
         

@@ -1,4 +1,4 @@
-# Omni-RAG
+# ✨ Omni-RAG
 
 A modular, lightweight **Multimodal RAG** framework with a Python back-end and a graphical interface, mainly designed for the office domain. You can ingest PDF documents, scanned images, and complex tabular data to extract structured insights using free-tier **LLMs** (*Google Gemini* or *Meta Llama*).
 

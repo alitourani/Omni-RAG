@@ -1,6 +1,6 @@
 """
 Llama Vision Multimodal Provider for OmniRAG.
-Supports free-tier Quen 3.6 via:
+Supports free-tier Qwen 3.6 via:
 1. Groq Cloud (Free API tier: qwen/qwen3.6-27b)
 2. Local Ollama (100% offline & free: llama3.2-vision:11b)
 3. Hugging Face free Inference API

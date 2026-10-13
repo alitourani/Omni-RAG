@@ -5,7 +5,7 @@ Covers:
 1. Document Ingestion & Page Rendering
 2. Visual & Tabular Chunk Indexing
 3. Hybrid Retrieval (Top-k visual pages + table snippets)
-4. Model Dispatcher (Gemini 3.8 Flash / Quen 3.6)
+4. Model Dispatcher (Gemini 3.8 Flash / Qwen 3.6)
 """
 import re
 from dataclasses import dataclass
