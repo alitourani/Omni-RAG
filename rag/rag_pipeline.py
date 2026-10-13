@@ -5,7 +5,7 @@ Covers:
 1. Document Ingestion & Page Rendering
 2. Visual & Tabular Chunk Indexing
 3. Hybrid Retrieval (Top-k visual pages + table snippets)
-4. Model Dispatcher (Gemini 3.8 Flash / Qwen 3.6)
+4. Model Dispatcher (Gemini 2.5 Flash / Llama 3.2 Vision)
 """
 import re
 from dataclasses import dataclass
@@ -170,12 +170,13 @@ class MultimodalRAGPipeline:
         page_images = [p.image_base64 for p in retrieval.pages]
 
         # 4. Dispatch to selected model
-        if model_type.lower() == "gemini":
+        m_lower = model_type.lower()
+        if "gemini" in m_lower:
             provider = self.gemini_provider
-        elif model_type.lower() == "llama":
+        elif "llama" in m_lower or "qwen" in m_lower:
             provider = self.llama_provider
         else:
-            raise ValueError(f"Unknown model_type '{model_type}'. Choose 'gemini' or 'llama'.")
+            raise ValueError(f"Unknown model_type '{model_type}'. Choose 'gemini', 'llama', or 'qwen'.")
 
         response = provider.generate_insight(
             query=question,

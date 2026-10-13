@@ -455,7 +455,15 @@ async function executeQuery(queryText) {
         })
       });
 
-      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      if (!res.ok) {
+        let errorDetail = `Server returned ${res.status}`;
+        try {
+          const errJson = await res.json();
+          if (errJson.detail) errorDetail = errJson.detail;
+          else if (errJson.error) errorDetail = errJson.error;
+        } catch (_) {}
+        throw new Error(errorDetail);
+      }
       result = await res.json();
     } else {
       // Intelligent Simulation for Demo on GitHub Pages
